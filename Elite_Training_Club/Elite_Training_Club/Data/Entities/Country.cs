@@ -2,6 +2,7 @@
 
 namespace Elite_Training_Club.Data.Entities
 {
+    //,,,
     public class Country
     {
         public int Id { get; set; }
