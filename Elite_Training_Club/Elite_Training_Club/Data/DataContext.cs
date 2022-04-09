@@ -9,12 +9,15 @@ namespace Elite_Training_Club.Data
         {
 
         }
+
         public DbSet<Country> Countries { get; set; }
 
+        public DbSet<Plan> Plans { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Plan>().HasIndex(c => c.Name).IsUnique();
         }
     }
 }
