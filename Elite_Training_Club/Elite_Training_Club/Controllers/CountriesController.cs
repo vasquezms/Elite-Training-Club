@@ -1,14 +1,9 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Elite_Training_Club.Data;
 using Elite_Training_Club.Data.Entities;
 using Elite_Training_Club.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Elite_Training_Club.Controllers
 {
@@ -24,12 +19,12 @@ namespace Elite_Training_Club.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-
             return View(await _context.Countries
-                .Include(c => c.States)
-                .ToListAsync());
+           .Include(c => c.States)
+           .ThenInclude(c => c.Cities)
+           .ThenInclude(c => c.Headquarters)
+           .ToListAsync());
         }
-
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
@@ -46,7 +41,6 @@ namespace Elite_Training_Club.Controllers
             {
                 return NotFound();
             }
-
             return View(country);
         }
         public async Task<IActionResult> DetailsState(int? id)
@@ -55,7 +49,6 @@ namespace Elite_Training_Club.Controllers
             {
                 return NotFound();
             }
-
             State state = await _context.States
                 .Include(s => s.Country)
                 .Include(s => s.Cities)
@@ -64,7 +57,6 @@ namespace Elite_Training_Club.Controllers
             {
                 return NotFound();
             }
-
             return View(state);
         }
         public async Task<IActionResult> DetailsCity(int? id)
@@ -73,18 +65,31 @@ namespace Elite_Training_Club.Controllers
             {
                 return NotFound();
             }
-
             City city = await _context.Cities
                 .Include(c => c.State)
+                .Include(c => c.Headquarters)
                 .FirstOrDefaultAsync(c => c.Id == id);
             if (city == null)
             {
                 return NotFound();
             }
-
             return View(city);
         }
-
+        public async Task<IActionResult> DetailsHeadquarter(int? id)
+        {
+            if (id == null)  
+            {
+                return NotFound();
+            }
+            Headquarter headquarter = await _context.Headquarters
+                .Include(h => h.City)
+                .FirstOrDefaultAsync(h => h.Id == id);
+            if (headquarter == null)
+            {
+                return NotFound();
+            }
+            return View(headquarter);
+        }
 
         public IActionResult Create()
         {
@@ -92,10 +97,9 @@ namespace Elite_Training_Club.Controllers
             return View(country);
         }
 
-      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Country country)
+        public async Task<IActionResult> Create(Country country)
         {
             if (ModelState.IsValid)
             {
@@ -160,6 +164,7 @@ namespace Elite_Training_Club.Controllers
                         Cities = new List<City>(),
                         Country = await _context.Countries.FindAsync(model.CountryId),
                         Name = model.Name,
+
                     };
                     _context.Add(state);
                     await _context.SaveChangesAsync();
@@ -217,6 +222,7 @@ namespace Elite_Training_Club.Controllers
                 {
                     City city = new()
                     {
+                        Headquarters = new List<Headquarter>(),
                         State = await _context.States.FindAsync(model.StateId),
                         Name = model.Name,
                     };
@@ -243,10 +249,65 @@ namespace Elite_Training_Club.Controllers
             }
             return View(model);
         }
+        public async Task<IActionResult> AddHeadquarter(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            City city = await _context.Cities.FindAsync(id);
+            if (city == null)
+            {
+                return NotFound();
+            }
+
+            HeadquarterViewModel model = new()
+            {
+                CityId = city.Id,
+            };
+
+            return View(model);
+        }
 
 
-
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddHeadquarter(HeadquarterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Headquarter headquarter = new()
+                    {
+                        City = await _context.Cities.FindAsync(model.CityId),
+                        Name = model.Name,
+                    };
+                    _context.Add(headquarter);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(DetailsCity), new { Id = model.CityId });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe una sede con el mismo nombre " +
+                            "en esta ciudad.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+            return View(model);
+        }
         // GET: Countries/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -344,7 +405,7 @@ namespace Elite_Training_Club.Controllers
                     };
                     _context.Update(state);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Details), new{ id= model.CountryId});
+                    return RedirectToAction(nameof(Details), new { id = model.CountryId });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
@@ -430,9 +491,71 @@ namespace Elite_Training_Club.Controllers
             }
             return View(model);
         }
+        public async Task<IActionResult> EditHeadquarter(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            Headquarter headquarter = await _context.Headquarters
+                .Include(h => h.City)
+                .FirstOrDefaultAsync(h => h.Id == id);
+            if (headquarter == null)
+            {
+                return NotFound();
+            }
+            HeadquarterViewModel model = new()
+            {
+                CityId = headquarter.City.Id,
+                Id = headquarter.Id,
+                Name = headquarter.Name,
+            };
 
-        // GET: Countries/Delete/5
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditHeadquarter(int id, HeadquarterViewModel model)
+        {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Headquarter headquarter = new()
+                    {
+                        Id = model.Id,
+                        Name = model.Name,
+                    };
+                    _context.Update(headquarter);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(DetailsCity), new { id = model.CityId});
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe una sede con el mismo" +
+                            " nombre en esta ciudad.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+            return View(model);
+        }
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -489,7 +612,7 @@ namespace Elite_Training_Club.Controllers
             .FirstOrDefaultAsync(S => S.Id == id);
             _context.States.Remove(state);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Details), new {Id=state.Country.Id});
+            return RedirectToAction(nameof(Details), new { Id = state.Country.Id });
         }
         public async Task<IActionResult> DeleteCity(int? id)
         {
@@ -521,6 +644,36 @@ namespace Elite_Training_Club.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(DetailsState), new { Id = city.State.Id });
         }
+        public async Task<IActionResult> DeleteHeadquarter(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Headquarter headquarter = await _context.Headquarters
+                .Include(h => h.City)
+                .FirstOrDefaultAsync(h => h.Id == id);
+            if (headquarter == null)
+            {
+                return NotFound();
+            }
+
+            return View(headquarter);
+        }
+
+        // POST: Countries/Delete/5
+        [HttpPost, ActionName("DeleteHeadquarter")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteHeadquarterConfirmed(int id)
+        {
+            Headquarter headquarter = await _context.Headquarters
+                .Include(h => h.City)
+                .FirstOrDefaultAsync(h => h.Id == id);
+            _context.Headquarters.Remove(headquarter);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(DetailsCity), new { Id = headquarter.City.Id });
+        }
     }
 }
-    
+
