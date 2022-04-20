@@ -15,6 +15,8 @@ namespace Elite_Training_Club.Data.Entities
 
         public ICollection<Headquarter> Headquarters { get; set; }
 
+        public ICollection<User> Users { get; set; }
+
         [Display(Name = "Sedes")]
         public int HeadquartersNumber => Headquarters == null ? 0 : Headquarters.Count;
     }
