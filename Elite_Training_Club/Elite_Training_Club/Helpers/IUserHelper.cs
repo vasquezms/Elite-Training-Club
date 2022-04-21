@@ -1,4 +1,5 @@
 ﻿using Elite_Training_Club.Data.Entities;
+using Elite_Training_Club.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace Elite_Training_Club.Helpers
@@ -14,6 +15,11 @@ namespace Elite_Training_Club.Helpers
         Task AddUserToRoleAsync(User user, string roleName);
 
         Task<bool> IsUserInRoleAsync(User user, string roleName);
+
+        Task<SignInResult> LoginAsync(LoginViewModel model);
+
+        Task LogoutAsync();
+
 
     }
 }
