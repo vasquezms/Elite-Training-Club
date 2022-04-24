@@ -3,8 +3,8 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Elite_Training_Club.Helpers
 {
-    
     public class BlobHelper : IBlobHelper
+
     {
         private readonly CloudBlobClient _blobClient;
 
@@ -13,13 +13,11 @@ namespace Elite_Training_Club.Helpers
             string keys = configuration["Blob:ConnectionString"];
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(keys);
             _blobClient = storageAccount.CreateCloudBlobClient();
+
         }
-
-        CloudBlobClient BlobClient { get; }
-
         public async Task DeleteBlobAsync(Guid id, string containerName)
         {
-            CloudBlobContainer container = BlobClient.GetContainerReference(containerName);
+            CloudBlobContainer container = _blobClient.GetContainerReference(containerName);
             CloudBlockBlob blockBlob = container.GetBlockBlobReference($"{id}");
             await blockBlob.DeleteAsync();
         }
@@ -29,6 +27,7 @@ namespace Elite_Training_Club.Helpers
             Stream stream = file.OpenReadStream();
             return await UploadBlobAsync(stream, containerName);
         }
+
 
         public async Task<Guid> UploadBlobAsync(byte[] file, string containerName)
         {
@@ -45,12 +44,11 @@ namespace Elite_Training_Club.Helpers
         private async Task<Guid> UploadBlobAsync(Stream stream, string containerName)
         {
             Guid name = Guid.NewGuid();
-            CloudBlobContainer container = BlobClient.GetContainerReference(containerName);
+            CloudBlobContainer container = _blobClient.GetContainerReference(containerName);
             CloudBlockBlob blockBlob = container.GetBlockBlobReference($"{name}");
             await blockBlob.UploadFromStreamAsync(stream);
             return name;
         }
-
 
     }
 }

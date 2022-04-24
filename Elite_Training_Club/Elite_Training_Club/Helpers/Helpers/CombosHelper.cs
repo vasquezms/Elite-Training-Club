@@ -7,10 +7,12 @@ namespace Elite_Training_Club.Helpers
     public class CombosHelper : ICombosHelper
     {
         private readonly DataContext _context;
-        public CombosHelper(DataContex context)
+
+        public CombosHelper(DataContext context)
         {
-            _context = context; 
+            _context = context;
         }
+
         public async Task<IEnumerable<SelectListItem>> GetComboPlansAsync()
         {
             List<SelectListItem> list = await _context.Plans.Select(x => new SelectListItem
@@ -18,12 +20,12 @@ namespace Elite_Training_Club.Helpers
                 Text = x.Name,
                 Value = $"{x.Id}"
             })
-               .OrderBy(p => p.Text)
-               .ToListAsync();
+                .OrderBy(x => x.Text)
+                .ToListAsync();
 
             list.Insert(0, new SelectListItem
             {
-                Text = "[Seleccione un plan ...]",
+                Text = "[Seleccione un plan...]",
                 Value = "0"
             });
 
@@ -70,6 +72,28 @@ namespace Elite_Training_Club.Helpers
             return list;
         }
 
+        public async Task<IEnumerable<SelectListItem>> GetComboHeadquarterAsync(int cityId)
+        {
+            List<SelectListItem> list = await _context.Headquarters
+                .Where(x => x.City.Id == cityId)
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = $"{x.Id}"
+                })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Seleccione una sede...]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
+
         public async Task<IEnumerable<SelectListItem>> GetComboStatesAsync(int countryId)
         {
             List<SelectListItem> list = await _context.States
@@ -91,9 +115,5 @@ namespace Elite_Training_Club.Helpers
             return list;
         }
 
-        public Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

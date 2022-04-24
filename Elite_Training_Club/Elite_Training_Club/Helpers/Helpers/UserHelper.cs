@@ -28,21 +28,22 @@ namespace Elite_Training_Club.Helpers
             return await _userManager.CreateAsync(user, password);
         }
 
-        public async Task<User> AddUserAsync(AddUserViewModel model, Guid imageId)
+        public async Task<User> AddUserAsync(AddUserViewModel model)
         {
-            User user = new ()
+            User user = new()
             {
                 Address = model.Address,
                 Document = model.Document,
                 Email = model.Username,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                ImageId = imageId,
+                ImageId = model.ImageId,
                 PhoneNumber = model.PhoneNumber,
                 City = await _context.Cities.FindAsync(model.CityId),
                 UserName = model.Username,
                 UserType = model.UserType
             };
+
             IdentityResult result = await _userManager.CreateAsync(user, model.Password);
             if (result != IdentityResult.Success)
             {
@@ -52,15 +53,8 @@ namespace Elite_Training_Club.Helpers
             User newUser = await GetUserAsync(model.Username);
             await AddUserToRoleAsync(newUser, user.UserType.ToString());
             return newUser;
-
-
-
         }
 
-        public Task<User> AddUserAsync(AddUserViewModel model)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task AddUserToRoleAsync(User user, string roleName)
         {
@@ -91,14 +85,15 @@ namespace Elite_Training_Club.Helpers
             return await _userManager.IsInRoleAsync(user, roleName);
         }
 
-        public Task<SignInResult> LoginAsync(LoginViewModel model)
+        public async Task<SignInResult> LoginAsync(LoginViewModel model)
         {
-            throw new NotImplementedException();
+            return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+
         }
 
-        public Task LogoutAsync()
+        public async Task LogoutAsync()
         {
-            throw new NotImplementedException();
+            await _signInManager.SignOutAsync();
         }
-
-}   }
+    }
+}   
