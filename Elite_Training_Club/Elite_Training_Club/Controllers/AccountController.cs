@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Elite_Training_Club.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class AccountController : Controller
     {
         private readonly IUserHelper _userHelper;
@@ -17,13 +16,12 @@ namespace Elite_Training_Club.Controllers
         private readonly ICombosHelper _combosHelper;
         private readonly IBlobHelper _blobHelper;
 
-        public AccountController(IUserHelper userHelper, DataContext context, ICombosHelper combosHelper, IBlobHelper
-            blobHelper)
+        public AccountController(IUserHelper userHelper, DataContext context, ICombosHelper combosHelper, IBlobHelper blobHelper)
         {
             _userHelper = userHelper;
-            _context = context;
-            _combosHelper = combosHelper;
-            _blobHelper = blobHelper;
+           _context = context;
+           _combosHelper = combosHelper;
+           _blobHelper = blobHelper;
         }
 
         public IActionResult Login()
@@ -62,20 +60,21 @@ namespace Elite_Training_Club.Controllers
         {
             return View();
         }
+
         public async Task<IActionResult> Register()
         {
-            AddUserViewModel model = new AddUserViewModel
+            AddUserViewModel model = new()
             {
                 Id = Guid.Empty.ToString(),
                 Countries = await _combosHelper.GetComboCountriesAsync(),
                 States = await _combosHelper.GetComboStatesAsync(0),
                 Cities = await _combosHelper.GetComboCitiesAsync(0),
+                Headquarters = await _combosHelper.GetComboHeadquarterAsync(0),
                 UserType = UserType.User,
             };
 
             return View(model);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -89,7 +88,6 @@ namespace Elite_Training_Club.Controllers
                 {
                     imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "users");
                 }
-
                 model.ImageId = imageId;
                 User user = await _userHelper.AddUserAsync(model);
                 if (user == null)
@@ -98,7 +96,7 @@ namespace Elite_Training_Club.Controllers
                     return View(model);
                 }
 
-                LoginViewModel loginViewModel = new ()
+                LoginViewModel loginViewModel = new LoginViewModel
                 {
                     Password = model.Password,
                     RememberMe = false,
@@ -142,12 +140,19 @@ namespace Elite_Training_Club.Controllers
 
             return Json(state.Cities.OrderBy(c => c.Name));
         }
+        public JsonResult GetHeadquarters(int cityId)
+        {
+            City city = _context.Cities
+                .Include(c => c.Headquarters)
+                .FirstOrDefault(c => c.Id == cityId);
+            if (city == null)
+            {
+                return null;
+            }
 
+            return Json(city.Headquarters.OrderBy(c => c.Name));
+        }
 
     }
 
-
-
 }
-
-

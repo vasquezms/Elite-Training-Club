@@ -2,11 +2,13 @@
 using Elite_Training_Club.Data;
 using Elite_Training_Club.Data.Entities;
 using Elite_Training_Club.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Elite_Training_Club.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CountriesController : Controller
     {
         private readonly DataContext _context;
@@ -21,8 +23,6 @@ namespace Elite_Training_Club.Controllers
         {
             return View(await _context.Countries
            .Include(c => c.States)
-           .ThenInclude(c => c.Cities)
-           .ThenInclude(c => c.Headquarters)
            .ToListAsync());
         }
         [HttpGet]
@@ -68,7 +68,7 @@ namespace Elite_Training_Club.Controllers
             City city = await _context.Cities
                 .Include(c => c.State)
                 .Include(c => c.Headquarters)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (city == null)
             {
                 return NotFound();
@@ -83,7 +83,7 @@ namespace Elite_Training_Club.Controllers
             }
             Headquarter headquarter = await _context.Headquarters
                 .Include(h => h.City)
-                .FirstOrDefaultAsync(h => h.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (headquarter == null)
             {
                 return NotFound();
@@ -574,7 +574,6 @@ namespace Elite_Training_Club.Controllers
             return View(country);
         }
 
-        // POST: Countries/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -602,7 +601,6 @@ namespace Elite_Training_Club.Controllers
             return View(state);
         }
 
-        // POST: Countries/Delete/5
         [HttpPost, ActionName("DeleteState")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteStateConfirmed(int id)
@@ -632,7 +630,6 @@ namespace Elite_Training_Club.Controllers
             return View(city);
         }
 
-        // POST: Countries/Delete/5
         [HttpPost, ActionName("DeleteCity")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCityConfirmed(int id)
@@ -662,7 +659,6 @@ namespace Elite_Training_Club.Controllers
             return View(headquarter);
         }
 
-        // POST: Countries/Delete/5
         [HttpPost, ActionName("DeleteHeadquarter")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteHeadquarterConfirmed(int id)

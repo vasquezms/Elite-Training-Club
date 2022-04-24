@@ -1,5 +1,4 @@
 ﻿using Elite_Training_Club.Data.Entities;
-using Elite_Training_Club.Helpers;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +23,5 @@ namespace Elite_Training_Club.Data
             modelBuilder.Entity<State>().HasIndex("Name", "CountryId").IsUnique();
             modelBuilder.Entity<Plan>().HasIndex(c => c.Name).IsUnique();
         }
-
-        
     }
 }

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Elite_Training_Club.Models
 {
+
     public class AddUserViewModel : EditUserViewModel
     {
         [Display(Name = "Email")]
@@ -26,6 +27,5 @@ namespace Elite_Training_Club.Models
 
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
-
     }
 }
