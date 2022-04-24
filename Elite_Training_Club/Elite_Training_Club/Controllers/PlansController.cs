@@ -1,10 +1,12 @@
 ﻿using Elite_Training_Club.Data;
 using Elite_Training_Club.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Elite_Training_Club.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class PlansController : Controller
     {
         private readonly DataContext _context;

@@ -10,6 +10,7 @@ namespace Elite_Training_Club.Models
             [EmailAddress(ErrorMessage = "Debes ingresar un correo válido.")]
             public string Username { get; set; }
 
+            [DataType(DataType.Password)]
             [Display(Name = "Contraseña")]
             [Required(ErrorMessage = "El campo {0} es obligatorio.")]
             [MinLength(6, ErrorMessage = "El campo {0} debe tener al menos {1} carácteres.")]

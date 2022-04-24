@@ -20,18 +20,19 @@ namespace Elite_Training_Club.Data
             await CheckPlanAsync();
             await CheckCountriesAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("1010", "Hernan", "Bwerrio", "hernan@yopmail.com", "317 891 1968", "San Gabril Itagui", UserType.Admin);
+            await CheckUserAsync("1010", "Hernan", "Berrio", "hernan@yopmail.com", "317 891 1968", "San Gabril Itagui", UserType.Admin);
+            await CheckUserAsync("2020", "Santiago", "Muñoz", "santiago@yopmail.com", "300 815 8260", "La Gabriela Bello", UserType.User);
 
         }
 
         private async Task<User> CheckUserAsync(
-    string document,
-    string firstName,
-    string lastName,
-    string email,
-    string phone,
-    string address,
-    UserType userType)
+            string document,
+            string firstName,
+            string lastName,
+            string email,
+            string phone,
+            string address,
+            UserType userType)
         {
             User user = await _userHelper.GetUserAsync(email);
             if (user == null)

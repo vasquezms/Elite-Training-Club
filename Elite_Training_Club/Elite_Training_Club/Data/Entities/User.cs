@@ -21,6 +21,9 @@ namespace Elite_Training_Club.Data.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string LastName { get; set; }
 
+        [Display(Name = "Ciudad")]
+        public City City { get; set; }
+
         [Display(Name = "Dirección")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -37,9 +40,6 @@ namespace Elite_Training_Club.Data.Entities
 
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
-
-        [Display(Name = "Ciudad")]
-        public City City { get; set; }
 
         [Display(Name = "Usuario")]
         public string FullName => $"{FirstName} {LastName}";

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Elite_Training_Club.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class AccountController : Controller
     {
         private readonly IUserHelper _userHelper;

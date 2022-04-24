@@ -2,11 +2,13 @@
 using Elite_Training_Club.Data;
 using Elite_Training_Club.Data.Entities;
 using Elite_Training_Club.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Elite_Training_Club.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CountriesController : Controller
     {
         private readonly DataContext _context;
