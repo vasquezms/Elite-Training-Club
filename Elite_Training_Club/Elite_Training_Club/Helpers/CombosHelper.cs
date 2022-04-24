@@ -13,7 +13,7 @@ namespace Elite_Training_Club.Helpers
             _context = context;
         }
 
-        public async Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync()
+        public async Task<IEnumerable<SelectListItem>> GetComboPlansAsync()
         {
             List<SelectListItem> list = await _context.Plans.Select(x => new SelectListItem
             {
@@ -71,6 +71,28 @@ namespace Elite_Training_Club.Helpers
 
             return list;
         }
+
+        public async Task<IEnumerable<SelectListItem>> GetComboHeadquarterAsync(int cityId)
+        {
+            List<SelectListItem> list = await _context.Headquarters
+                .Where(x => x.City.Id == cityId)
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = $"{x.Id}"
+                })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Seleccione una sede...]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
 
         public async Task<IEnumerable<SelectListItem>> GetComboStatesAsync(int countryId)
         {

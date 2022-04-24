@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Elite_Training_Club.Data.Entities
 {
@@ -11,6 +12,7 @@ namespace Elite_Training_Club.Data.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public String Name { get; set; }
 
+        [JsonIgnore]
         public City City { get; set; }
     }
 }
