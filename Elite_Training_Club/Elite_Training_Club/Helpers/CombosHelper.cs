@@ -1,0 +1,99 @@
+﻿using Elite_Training_Club.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+
+namespace Elite_Training_Club.Helpers
+{
+    public class CombosHelper : ICombosHelper
+    {
+        private readonly DataContext _context;
+        public CombosHelper(DataContex context)
+        {
+            _context = context; 
+        }
+        public async Task<IEnumerable<SelectListItem>> GetComboPlansAsync()
+        {
+            List<SelectListItem> list = await _context.Plans.Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = $"{x.Id}"
+            })
+               .OrderBy(p => p.Text)
+               .ToListAsync();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Seleccione un plan ...]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetComboCitiesAsync(int stateId)
+        {
+            List<SelectListItem> list = await _context.Cities
+                .Where(x => x.State.Id == stateId)
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = $"{x.Id}"
+                })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Seleccione una ciudad...]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetComboCountriesAsync()
+        {
+            List<SelectListItem> list = await _context.Countries.Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = $"{x.Id}"
+            })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Seleccione un país...]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetComboStatesAsync(int countryId)
+        {
+            List<SelectListItem> list = await _context.States
+                .Where(x => x.Country.Id == countryId)
+                .Select(x => new SelectListItem
+                {
+                    Text = x.Name,
+                    Value = $"{x.Id}"
+                })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Seleccione un departamento/estado...]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
+        public Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

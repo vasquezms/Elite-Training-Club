@@ -32,8 +32,8 @@ namespace Elite_Training_Club.Data.Entities
         //TODO: Pending to put the correct paths
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:7057/images/noimage.png"
-            : $"https://shoppingprep.blob.core.windows.net/users/{ImageId}";
+            ? $"https://localhost:7054/images/noimage.png"
+            : $"https://shoppingzulu.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }
@@ -47,5 +47,9 @@ namespace Elite_Training_Club.Data.Entities
         [Display(Name = "Usuario")]
         public string FullNameWithDocument => $"{FirstName} {LastName} - {Document}";
 
+        public static implicit operator Guid(User v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
