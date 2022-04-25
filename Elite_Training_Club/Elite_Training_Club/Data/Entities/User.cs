@@ -34,7 +34,7 @@ namespace Elite_Training_Club.Data.Entities
 
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:7057/images/noimage.png"
+            ? $"https://localhost:7244/images/noimage.png"
             : $"https://shoppingzulu.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Tipo de usuario")]

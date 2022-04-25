@@ -20,6 +20,10 @@ builder.Services.AddIdentity<User, IdentityRole>(cfg =>
     cfg.Password.RequireLowercase = false;
     cfg.Password.RequireNonAlphanumeric = false;
     cfg.Password.RequireUppercase = false;
+    cfg.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+    cfg.Lockout.MaxFailedAccessAttempts = 3;
+    cfg.Lockout.AllowedForNewUsers = true;
+
 }).AddEntityFrameworkStores<DataContext>();
 
 builder.Services.ConfigureApplicationCookie(options =>
