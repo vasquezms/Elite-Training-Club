@@ -41,7 +41,7 @@ namespace Elite_Training_Club.Models
             : $"https://shoppingzulu.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Imagen")]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         [Display(Name = "País")]
         [Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar un país.")]

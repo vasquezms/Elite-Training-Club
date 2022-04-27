@@ -61,6 +61,11 @@ namespace Elite_Training_Club.Helpers
             await _userManager.AddToRoleAsync(user, roleName);
         }
 
+        public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+        }
+
         public async Task CheckRoleAsync(string roleName)
         {
             bool roleExists = await _roleManager.RoleExistsAsync(roleName);
@@ -77,7 +82,18 @@ namespace Elite_Training_Club.Helpers
         {
             return await _context.Users
                 .Include(u => u.City)
+                .ThenInclude(c => c.State)
+                .ThenInclude(u => u.Country)
                 .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User> GetUserAsync(Guid userId)
+        {
+            return await _context.Users
+               .Include(u => u.City)
+               .ThenInclude(c => c.State)
+               .ThenInclude(u => u.Country)
+               .FirstOrDefaultAsync(u => u.Id == userId.ToString());
         }
 
         public async Task<bool> IsUserInRoleAsync(User user, string roleName)
@@ -87,7 +103,7 @@ namespace Elite_Training_Club.Helpers
 
         public async Task<SignInResult> LoginAsync(LoginViewModel model)
         {
-            return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+            return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, true);
 
         }
 
@@ -95,5 +111,31 @@ namespace Elite_Training_Club.Helpers
         {
             await _signInManager.SignOutAsync();
         }
+
+        public async Task<IdentityResult> UpdateUserAsync(User user)
+        {
+           return await _userManager.UpdateAsync(user);
+        }
+
+        public async Task<IdentityResult> ConfirmEmailAsync(User user, string token)
+        {
+            return await _userManager.ConfirmEmailAsync(user, token);
+        }
+
+        public async Task<string> GenerateEmailConfirmationTokenAsync(User user)
+        {
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+        public async Task<string> GeneratePasswordResetTokenAsync(User user)
+        {
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task<IdentityResult> ResetPasswordAsync(User user, string token, string password)
+        {
+            return await _userManager.ResetPasswordAsync(user, token, password);
+        }
+
     }
+
 }   
