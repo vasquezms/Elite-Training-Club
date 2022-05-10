@@ -18,11 +18,24 @@ namespace Elite_Training_Club.Data
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckPlanAsync();
+            await CheckCategoriesAsync();
             await CheckCountriesAsync();
             await CheckRolesAsync();
             await CheckUserAsync("1010", "Hernan", "Berrio", "hernan@yopmail.com", "317 891 1968", "San Gabril Itagui", UserType.Admin);
             await CheckUserAsync("2020", "Santiago", "Muñoz", "santiago@yopmail.com", "300 815 8260", "La Gabriela Bello", UserType.User);
 
+        }
+
+        private async Task CheckCategoriesAsync()
+        {
+            if (!_context.Categories.Any())
+            {
+                _context.Categories.Add(new Category { Name = "Adelgazantes" });
+                _context.Categories.Add(new Category { Name = "Accesorios deportivos" });
+                _context.Categories.Add(new Category { Name = "Productos nutricionales" });
+                _context.Categories.Add(new Category { Name = "Articulos Elite_Training_Club" });
+                await _context.SaveChangesAsync();
+            }
         }
 
         private async Task<User> CheckUserAsync(
