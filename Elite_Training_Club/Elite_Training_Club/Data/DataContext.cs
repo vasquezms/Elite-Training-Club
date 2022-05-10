@@ -10,6 +10,7 @@ namespace Elite_Training_Club.Data
         {
         }
         public DbSet<Country> Countries { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Headquarter> Headquarters { get; set; }
         public DbSet<State> States { get; set; }
@@ -18,6 +19,7 @@ namespace Elite_Training_Club.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Country>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<City>().HasIndex("Name", "StateId").IsUnique();
             modelBuilder.Entity<Headquarter>().HasIndex("Name", "CityId").IsUnique();
             modelBuilder.Entity<State>().HasIndex("Name", "CountryId").IsUnique();

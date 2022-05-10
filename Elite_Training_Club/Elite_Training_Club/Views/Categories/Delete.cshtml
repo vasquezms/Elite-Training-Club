@@ -1,4 +1,4 @@
-﻿@model Elite_Training_Club.Data.Entities.Country
+﻿@model Elite_Training_Club.Data.Entities.Category
 
 @{
     ViewData["Title"] = "Delete";
@@ -9,7 +9,7 @@
 <h3>¿Está seguro de querer borrar?</h3>
 <div>
 
-    <partial name="_CountryDetails" />
+    <partial name="_CategoryDetails" />
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
