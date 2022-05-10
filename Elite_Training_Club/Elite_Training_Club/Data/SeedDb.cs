@@ -33,6 +33,7 @@ namespace Elite_Training_Club.Data
                 _context.Categories.Add(new Category { Name = "Adelgazantes" });
                 _context.Categories.Add(new Category { Name = "Accesorios deportivos" });
                 _context.Categories.Add(new Category { Name = "Productos nutricionales" });
+                _context.Categories.Add(new Category { Name = "Articulos Elite_Training_Club" });
                 await _context.SaveChangesAsync();
             }
         }
