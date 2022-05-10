@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Elite_Training_Club.Data.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Elite_Training_Club.Helpers
 {
     public interface ICombosHelper
+
     {
+
+        Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync();
         Task<IEnumerable<SelectListItem>> GetComboPlansAsync();
 
         Task<IEnumerable<SelectListItem>> GetComboCountriesAsync();

@@ -1,10 +1,11 @@
 ﻿using Elite_Training_Club.Data;
+using Elite_Training_Club.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Elite_Training_Club.Helpers
 {
-    public class CombosHelper : ICombosHelper
+    public class CombosHelper : ICombosHelper 
     {
         private readonly DataContext _context;
 
@@ -12,8 +13,33 @@ namespace Elite_Training_Club.Helpers
         {
             _context = context;
         }
+        public async Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync()
+        {
+            List<SelectListItem> list = await _context.Categories.Select(c => new SelectListItem
+            {
+                Text = c.Name,
+                Value = c.Id.ToString()
+            })
+                .OrderBy(c => c.Text)
+                .ToListAsync();
 
-        public async Task<IEnumerable<SelectListItem>> GetComboPlansAsync()
+            list.Insert(0, new SelectListItem { Text = "[Seleccione una categoría...", Value = "0" });
+            return list;
+        }
+
+       // public async Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync(IEnumerable<Category> filter)
+       // {
+         //   List<Category> categories = await _context.Categories.ToListAsync();
+           // List<Category> categoriesFiltered = new();
+            //foreach (Category category in categories)
+            //{
+         //       if (!filter.Any(c => c.Id == category.Id))
+           //     {
+             //       categoriesFiltered.Add(category);
+               // }
+            //}
+        //}
+            public async Task<IEnumerable<SelectListItem>> GetComboPlansAsync()
         {
             List<SelectListItem> list = await _context.Plans.Select(x => new SelectListItem
             {
@@ -114,6 +140,7 @@ namespace Elite_Training_Club.Helpers
 
             return list;
         }
+
 
     }
 }

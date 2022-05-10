@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Elite_Training_Club.Data.Entities
+namespace Elite_Training_Club.Models
 {
-    public class Product
+    public class EditProductViewModel
     {
         public int Id { get; set; }
 
@@ -12,12 +11,11 @@ namespace Elite_Training_Club.Data.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Name { get; set; }
 
-        [DataType(DataType.MultilineText)]
         [Display(Name = "Descripción")]
         [MaxLength(500, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Description { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
         [Display(Name = "Precio")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -28,21 +26,5 @@ namespace Elite_Training_Club.Data.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public float Stock { get; set; }
 
-        public ICollection<ProductCategory> ProductCategories { get; set; }
-
-        [Display(Name = "Categorías")]
-        public int CategoriesNumber => ProductCategories == null ? 0 : ProductCategories.Count;
-
-        public ICollection<ProductImage> ProductImages { get; set; }
-
-        [Display(Name = "Fotos")]
-        public int ImagesNumber => ProductImages == null ? 0 : ProductImages.Count;
-
-        //TODO: Pending to change to the correct path
-        [Display(Name = "Foto")]
-        public string ImageFullPath => ProductImages == null || ProductImages.Count == 0
-            ? $"https://localhost:7057/images/noimage.png"
-            : ProductImages.FirstOrDefault().ImageFullPath;
     }
-
 }

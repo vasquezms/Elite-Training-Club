@@ -15,6 +15,10 @@ namespace Elite_Training_Club.Data
         public DbSet<Headquarter> Headquarters { get; set; }
         public DbSet<State> States { get; set; }
         public DbSet<Plan> Plans { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -24,6 +28,8 @@ namespace Elite_Training_Club.Data
             modelBuilder.Entity<Headquarter>().HasIndex("Name", "CityId").IsUnique();
             modelBuilder.Entity<State>().HasIndex("Name", "CountryId").IsUnique();
             modelBuilder.Entity<Plan>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<Product>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<ProductCategory>().HasIndex("ProductId", "CategoryId").IsUnique();
         }
     }
 }

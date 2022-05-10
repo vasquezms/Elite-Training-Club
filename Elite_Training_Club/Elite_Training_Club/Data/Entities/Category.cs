@@ -11,5 +11,7 @@ namespace Elite_Training_Club.Data.Entities
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public String Name { get; set; }
 
+        public ICollection<ProductCategory> ProductCategories { get; set; }
+    
     }
 }
