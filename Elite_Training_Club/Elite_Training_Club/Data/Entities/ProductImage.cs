@@ -14,8 +14,8 @@ namespace Elite_Training_Club.Data.Entities
         //TODO: Pending to change to the correct path
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:7057/images/noimage.png"
-            : $"https://shoppingzulu.blob.core.windows.net/users/{ImageId}";
+            ? $"https://zulushooping.azurewebsites.net/images/noimage.png"
+            : $"https://shoppingzulu.blob.core.windows.net/products/{ImageId}";
     }
 
 }
