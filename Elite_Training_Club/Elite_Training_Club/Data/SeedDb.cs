@@ -1,6 +1,7 @@
 ﻿using Elite_Training_Club.Data.Entities;
 using Elite_Training_Club.Enums;
 using Elite_Training_Club.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Elite_Training_Club.Data
 {
@@ -8,35 +9,89 @@ namespace Elite_Training_Club.Data
     {
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly IBlobHelper _blobHelper;
 
-        public SeedDb(DataContext context, IUserHelper userHelper)
+        public SeedDb(DataContext context, IUserHelper userHelper, IBlobHelper blobHelper )
         {            
             _context = context;
             _userHelper = userHelper;
+            _blobHelper = blobHelper;
         }
+        
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckPlanAsync();
             await CheckCategoriesAsync();
             await CheckCountriesAsync();
+            await CheckProductsAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("1010", "Hernan", "Berrio", "hernan@yopmail.com", "317 891 1968", "San Gabril Itagui", UserType.Admin);
-            await CheckUserAsync("2020", "Santiago", "Muñoz", "santiago@yopmail.com", "300 815 8260", "La Gabriela Bello", UserType.User);
+            await CheckUserAsync("1010", "Hernan", "Berrio", "hernan@yopmail.com", "317 891 19 68", "Medellín, Antioquia",
+               "hernan.png", UserType.Admin);
+            await CheckUserAsync("2020", "Santiago", "Muñoz", "santiago@yopmail.com", "322 311 4620", "Bello, Antiquia",
+            "santiago.png", UserType.User);
+            await CheckUserAsync("3030", "Administrador", "Admin", "administrador@yopmail.com", "322 569 3345", "Calle Luna Calle Sol",
+            "administrador.png", UserType.Admin);
+        }
 
+        private async Task CheckProductsAsync()
+        {
+            if (!_context.Products.Any())
+            {
+                await AddProductAsync("Bipro", 70000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "Bipro.png" });
+                await AddProductAsync("complex", 250000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "complex.png", "complex2.png" });
+                await AddProductAsync("Complex2", 1300000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "complex2.png", });
+                await AddProductAsync("Complex3", 870000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "complex3png" });
+                await AddProductAsync("Complex4", 12000000M, 6F, new List<string>() { "Perdida de Peso" }, new List<string>() { "complex4.png" });
+                await AddProductAsync("Complex5", 56000M, 24F, new List<string>() { "Perdida de Peso" }, new List<string>() { "complex5.png" });
+                await AddProductAsync("creatine", 820000M, 12F, new List<string>() { "Perdida de Peso" }, new List<string>() { "creatine.png" });
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task AddProductAsync(string name, decimal price, float stock, List<string> categories, List<string> images)
+        {
+            Product prodcut = new()
+            {
+                Description = name,
+                Name = name,
+                Price = price,
+                Stock = stock,
+                ProductCategories = new List<ProductCategory>(),
+                ProductImages = new List<ProductImage>()
+            };
+
+            foreach (string? category in categories)
+            {
+                prodcut.ProductCategories.Add(new ProductCategory { Category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == category) });
+            }
+
+
+            foreach (string? image in images)
+            {
+                Guid imageId = await _blobHelper.UploadBlobAsync($"{Environment.CurrentDirectory}\\wwwroot\\images\\products\\{image}", "products");
+                prodcut.ProductImages.Add(new ProductImage { ImageId = imageId });
+            }
+
+            _context.Products.Add(prodcut);
         }
 
         private async Task CheckCategoriesAsync()
         {
             if (!_context.Categories.Any())
             {
-                _context.Categories.Add(new Category { Name = "Adelgazantes" });
+                _context.Categories.Add(new Category { Name = "Perdida de Peso" });
                 _context.Categories.Add(new Category { Name = "Accesorios deportivos" });
                 _context.Categories.Add(new Category { Name = "Productos nutricionales" });
                 _context.Categories.Add(new Category { Name = "Articulos Elite_Training_Club" });
+                _context.Categories.Add(new Category { Name = "Snacks" });
                 await _context.SaveChangesAsync();
             }
+            await _context.SaveChangesAsync();
         }
+
+
 
         private async Task<User> CheckUserAsync(
             string document,
@@ -45,11 +100,13 @@ namespace Elite_Training_Club.Data
             string email,
             string phone,
             string address,
+            string image,
             UserType userType)
         {
             User user = await _userHelper.GetUserAsync(email);
             if (user == null)
             {
+                Guid imageId = await _blobHelper.UploadBlobAsync($"{Environment.CurrentDirectory}\\wwwroot\\images\\users\\{image}", "users");
                 user = new User
                 {
                     FirstName = firstName,
@@ -61,6 +118,7 @@ namespace Elite_Training_Club.Data
                     Document = document,
                     City = _context.Cities.FirstOrDefault(),
                     UserType = userType,
+                    ImageId = imageId
                 };
 
                 await _userHelper.AddUserAsync(user, "123456");
