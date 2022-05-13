@@ -25,6 +25,7 @@ namespace Elite_Training_Club.Data
             await CheckCategoriesAsync();
             await CheckCountriesAsync();
             await CheckProductsAsync();
+            await CheckSubscriptionsAsync();
             await CheckRolesAsync();
             await CheckUserAsync("1010", "Hernan", "Berrio", "hernan@yopmail.com", "317 891 19 68", "Medellín, Antioquia",
                "hernan.png", UserType.Admin);
@@ -32,6 +33,18 @@ namespace Elite_Training_Club.Data
             "santiago.png", UserType.User);
             await CheckUserAsync("3030", "Administrador", "Admin", "administrador@yopmail.com", "322 569 3345", "Calle Luna Calle Sol",
             "administrador.png", UserType.Admin);
+        }
+
+        private async Task CheckSubscriptionsAsync()
+        {
+            if (!_context.Subscriptions.Any())
+            {
+                await AddSubscriptionAsync("Suscripción Lite", 59900M, new List<string>() { "Plan Basico" });
+                await AddSubscriptionAsync("Suscripción strong", 70000M, new List<string>() { "Plan Medio" });
+                await AddSubscriptionAsync("Suscripción weighty", 199900M, new List<string>() { "Plan Premium" });
+
+                await _context.SaveChangesAsync();
+            }
         }
 
         private async Task CheckProductsAsync()
@@ -76,7 +89,23 @@ namespace Elite_Training_Club.Data
 
             _context.Products.Add(prodcut);
         }
+        private async Task AddSubscriptionAsync(string name, decimal price, List<string> plans)
+        {
+            Subscriptions subscriptions = new()
+            {
+                Description = name,
+                Name = name,
+                Price = price,
+                SubscriptionsPlans = new List<SubscriptionsPlan>()
+            };
 
+            foreach (string? plan in plans)
+            {
+                subscriptions.SubscriptionsPlans.Add(new SubscriptionsPlan { Plan = await _context.Plans.FirstOrDefaultAsync(c => c.Name == plan) });
+            }
+
+            _context.Subscriptions.Add(subscriptions);
+        }
         private async Task CheckCategoriesAsync()
         {
             if (!_context.Categories.Any())

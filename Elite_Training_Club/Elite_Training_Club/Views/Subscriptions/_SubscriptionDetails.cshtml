@@ -1,0 +1,31 @@
+﻿
+@model Elite_Training_Club.Data.Entities.Subscriptions
+
+<h4>Suscripción</h4>
+<hr />
+<dl class="row">
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Name)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Name)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Description)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Description)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Price)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Price)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.SubscriptionsNumber)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.SubscriptionsNumber)
+    </dd>
+</dl>

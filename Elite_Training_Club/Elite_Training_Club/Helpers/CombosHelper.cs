@@ -26,19 +26,6 @@ namespace Elite_Training_Club.Helpers
             list.Insert(0, new SelectListItem { Text = "[Seleccione una categoría...", Value = "0" });
             return list;
         }
-
-       // public async Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync(IEnumerable<Category> filter)
-       // {
-         //   List<Category> categories = await _context.Categories.ToListAsync();
-           // List<Category> categoriesFiltered = new();
-            //foreach (Category category in categories)
-            //{
-         //       if (!filter.Any(c => c.Id == category.Id))
-           //     {
-             //       categoriesFiltered.Add(category);
-               // }
-            //}
-        //}
             public async Task<IEnumerable<SelectListItem>> GetComboPlansAsync()
         {
             List<SelectListItem> list = await _context.Plans.Select(x => new SelectListItem
@@ -162,6 +149,31 @@ namespace Elite_Training_Club.Helpers
                 .ToList();
 
             list.Insert(0, new SelectListItem { Text = "[Seleccione una categoría...", Value = "0" });
+            return list;
+        }
+
+        public async Task<IEnumerable<SelectListItem>> GetComboPlansAsync(IEnumerable<Plan> filter)
+        {
+
+            List<Plan> plans = await _context.Plans.ToListAsync();
+            List<Plan> plansFiltered = new();
+            foreach (Plan plan in plans)
+            {
+                if (!filter.Any(x => x.Id == plan.Id))
+                {
+                    plansFiltered.Add(plan);
+                }
+            }
+
+            List<SelectListItem> list = plansFiltered.Select(c => new SelectListItem
+            {
+                Text = c.Name,
+                Value = c.Id.ToString()
+            })
+                .OrderBy(c => c.Text)
+                .ToList();
+
+            list.Insert(0, new SelectListItem { Text = "[Seleccione un plan...", Value = "0" });
             return list;
         }
     }
