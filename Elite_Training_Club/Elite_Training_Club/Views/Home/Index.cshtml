@@ -1,11 +1,16 @@
 ﻿
-@model IEnumerable<Elite_Training_Club.Models.ProductsHomeViewModel>
+@model Elite_Training_Club.Models.HomeViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
-@foreach (var item in Model)
+@if(Model.Quantity > 0)
+{
+    <a asp-action="ShowCart" class="btn btn-outline-primary">Ver Compras (@Model.Quantity)</a>
+}
+
+@foreach (var item in Model.Products)
 {
     <div class="row">
         @if (item.Product1 != null)
