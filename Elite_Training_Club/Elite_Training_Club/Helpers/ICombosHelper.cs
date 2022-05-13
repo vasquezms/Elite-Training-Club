@@ -12,6 +12,7 @@ namespace Elite_Training_Club.Helpers
         Task<IEnumerable<SelectListItem>> GetComboCategoriesAsync(IEnumerable<Category> filter);
 
         Task<IEnumerable<SelectListItem>> GetComboPlansAsync();
+        Task<IEnumerable<SelectListItem>> GetComboPlansAsync(IEnumerable<Plan> filter);
 
         Task<IEnumerable<SelectListItem>> GetComboCountriesAsync();
 
