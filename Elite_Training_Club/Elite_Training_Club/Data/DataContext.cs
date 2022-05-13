@@ -19,6 +19,8 @@ namespace Elite_Training_Club.Data
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<TemporalSale> TemporalSales { get; set; }
+        public DbSet<Subscriptions> Subscriptions { get; set; }
+        public DbSet<SubscriptionsPlan> SubscriptionsPlans { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +33,9 @@ namespace Elite_Training_Club.Data
             modelBuilder.Entity<Plan>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<Product>().HasIndex(c => c.Name).IsUnique();
             modelBuilder.Entity<ProductCategory>().HasIndex("ProductId", "CategoryId").IsUnique();
+            modelBuilder.Entity<Subscriptions>().HasIndex(c => c.Name).IsUnique();
+            modelBuilder.Entity<SubscriptionsPlan>().HasIndex("SubscriptionsId", "PlanId").IsUnique();
+
         }
     }
 }
