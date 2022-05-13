@@ -41,7 +41,7 @@ namespace Elite_Training_Club.Data
                 await AddProductAsync("Bipro", 70000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "Bipro.png" });
                 await AddProductAsync("complex", 250000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "complex.png", "complex2.png" });
                 await AddProductAsync("Complex2", 1300000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "complex2.png", });
-                await AddProductAsync("Complex3", 870000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "complex3png" });
+                await AddProductAsync("Complex3", 870000M, 12F, new List<string>() { "Productos nutricionales" }, new List<string>() { "complex3.png" });
                 await AddProductAsync("Complex4", 12000000M, 6F, new List<string>() { "Perdida de Peso" }, new List<string>() { "complex4.png" });
                 await AddProductAsync("Complex5", 56000M, 24F, new List<string>() { "Perdida de Peso" }, new List<string>() { "complex5.png" });
                 await AddProductAsync("creatine", 820000M, 12F, new List<string>() { "Perdida de Peso" }, new List<string>() { "creatine.png" });
