@@ -2,6 +2,7 @@
 using Elite_Training_Club.Data.Entities;
 using Elite_Training_Club.Helpers;
 using Elite_Training_Club.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -171,6 +172,29 @@ namespace Elite_Training_Club.Controllers
             _context.TemporalSales.Add(temporalSale);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+        [Authorize]
+        public async Task<IActionResult> ShowCart()
+        {
+            User user = await _userHelper.GetUserAsync(User.Identity.Name);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            List<TemporalSale> temporalSales = await _context.TemporalSales
+                .Include(ts => ts.Product)
+                .ThenInclude(p => p.ProductImages)
+                .Where(ts => ts.User.Id == user.Id)
+                .ToListAsync();
+
+            ShowCartViewModel model = new()
+            {
+                User = user,
+                TemporalSales = temporalSales,
+            };
+
+            return View(model);
         }
     }
 }
