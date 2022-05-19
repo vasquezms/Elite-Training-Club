@@ -335,5 +335,10 @@ namespace Elite_Training_Club.Controllers
 
             return View(model);
         }
+        [Authorize]
+        public IActionResult OrderSuccess()
+        {
+            return View();
+        }
     }
 }
