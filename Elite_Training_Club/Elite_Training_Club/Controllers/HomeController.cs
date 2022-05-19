@@ -1,4 +1,5 @@
-﻿using Elite_Training_Club.Data;
+﻿using Elite_Training_Club.common;
+using Elite_Training_Club.Data;
 using Elite_Training_Club.Data.Entities;
 using Elite_Training_Club.Helpers;
 using Elite_Training_Club.Models;
@@ -14,12 +15,15 @@ namespace Elite_Training_Club.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly IOrdersHelper _ordersHelper;
 
-        public HomeController(ILogger<HomeController> logger,DataContext context, IUserHelper userHelper)
+        public HomeController(ILogger<HomeController> logger,DataContext context, IUserHelper userHelper,
+            IOrdersHelper ordersHelper)
         {
             _logger = logger;
             _context = context;
             _userHelper = userHelper;
+            _ordersHelper = ordersHelper;
         }
 
         public async Task<IActionResult> Index()
@@ -27,6 +31,7 @@ namespace Elite_Training_Club.Controllers
             List<Product> products = await _context.Products
                 .Include(p => p.ProductImages)
                 .Include(p => p.ProductCategories)
+                .Where(p => p.Stock > 0)
                 .OrderBy(p => p.Description)
                 .ToListAsync();
 
@@ -41,11 +46,6 @@ namespace Elite_Training_Club.Controllers
 
             return View(model);
         }
-
-
-
-    
-
 
     public async Task<IActionResult> Add(int? id)
         {
@@ -194,6 +194,32 @@ namespace Elite_Training_Club.Controllers
                 TemporalSales = temporalSales,
             };
 
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ShowCart(ShowCartViewModel model)
+        {
+            User user = await _userHelper.GetUserAsync(User.Identity.Name);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            model.User = user;
+            model.TemporalSales = await _context.TemporalSales
+                .Include(ts => ts.Product)
+                .ThenInclude(p => p.ProductImages)
+                .Where(ts => ts.User.Id == user.Id)
+                .ToListAsync();
+
+            Response response = await _ordersHelper.ProcessOrderAsync(model);
+            if (response.IsSuccess)
+            {
+                return RedirectToAction(nameof(OrderSuccess));
+            }
+
+            ModelState.AddModelError(string.Empty, response.Message);
             return View(model);
         }
         public async Task<IActionResult> DecreaseQuantity(int? id)
