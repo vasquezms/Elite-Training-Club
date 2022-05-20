@@ -3,6 +3,7 @@ using Elite_Training_Club.Data;
 using Elite_Training_Club.Data.Entities;
 using Elite_Training_Club.Enums;
 using Elite_Training_Club.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Elite_Training_Club.Helpers
 {
@@ -14,6 +15,29 @@ namespace Elite_Training_Club.Helpers
         {
             _context = context;
         }
+
+        public async Task<Response> CancelOrderAsync(int id)
+        {
+            Sale sale = await _context.Sales
+                .Include(s => s.SaleDetails)
+                .ThenInclude(sd => sd.Product)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            foreach (SaleDetail saleDetail in sale.SaleDetails)
+            {
+                Product product = await _context.Products.FindAsync(saleDetail.Product.Id);
+                if (product != null)
+                {
+                    product.Stock += saleDetail.Quantity;
+                }
+            }
+
+            sale.OrderStatus = OrderStatus.Cancelado;
+            await _context.SaveChangesAsync();
+            return new Response { IsSuccess = true };
+        }
+
+
         public async Task<Response> ProcessOrderAsync(ShowCartViewModel model)
         {
             Response response = await CheckInventoryAsync(model);
