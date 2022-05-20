@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Vereyon.Web;
 
 namespace Elite_Training_Club.Controllers
 {
@@ -16,14 +17,16 @@ namespace Elite_Training_Club.Controllers
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
         private readonly IOrdersHelper _ordersHelper;
+        private readonly IFlashMessage _flashMessage;
 
         public HomeController(ILogger<HomeController> logger,DataContext context, IUserHelper userHelper,
-            IOrdersHelper ordersHelper)
+            IOrdersHelper ordersHelper, IFlashMessage flashMessage)
         {
             _logger = logger;
             _context = context;
             _userHelper = userHelper;
             _ordersHelper = ordersHelper;
+            _flashMessage = flashMessage;
         }
 
         public async Task<IActionResult> Index()
@@ -219,7 +222,7 @@ namespace Elite_Training_Club.Controllers
                 return RedirectToAction(nameof(OrderSuccess));
             }
 
-            ModelState.AddModelError(string.Empty, response.Message);
+            _flashMessage.Danger(response.Message);
             return View(model);
         }
         public async Task<IActionResult> DecreaseQuantity(int? id)
@@ -326,7 +329,7 @@ namespace Elite_Training_Club.Controllers
                 }
                 catch (Exception exception)
                 {
-                    ModelState.AddModelError(string.Empty, exception.Message);
+                    _flashMessage.Danger(exception.Message);
                     return View(model);
                 }
 
