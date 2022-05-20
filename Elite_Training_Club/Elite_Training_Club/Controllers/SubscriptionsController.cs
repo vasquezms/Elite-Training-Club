@@ -5,6 +5,7 @@ using Elite_Training_Club.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Vereyon.Web;
 
 namespace Elite_Training_Club.Controllers
 {
@@ -17,11 +18,13 @@ namespace Elite_Training_Club.Controllers
 
         private readonly DataContext _context;
         private readonly ICombosHelper _combosHelper;
+        private readonly IFlashMessage _flashMessage;
 
-        public SubscriptionsController(DataContext context, ICombosHelper combosHelper)
+        public SubscriptionsController(DataContext context, ICombosHelper combosHelper, IFlashMessage flashMessage)
         {
             _context = context;
             _combosHelper = combosHelper;
+            _flashMessage = flashMessage;
         }
 
         public async Task<IActionResult> Index()
@@ -73,16 +76,16 @@ namespace Elite_Training_Club.Controllers
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "Ya existe una suscripción con el mismo nombre.");
+                        _flashMessage.Danger("Ya existe una suscripción con el mismo nombre.");
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                        _flashMessage.Danger(dbUpdateException.InnerException.Message);
                     }
                 }
                 catch (Exception exception)
                 {
-                    ModelState.AddModelError(string.Empty, exception.Message);
+                    _flashMessage.Danger(exception.Message);
                 }
             }
             model.Plans = await _combosHelper.GetComboCategoriesAsync();
@@ -136,16 +139,16 @@ namespace Elite_Training_Club.Controllers
             {
                 if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                 {
-                    ModelState.AddModelError(string.Empty, "Ya existe una suscripción con el mismo nombre.");
+                    _flashMessage.Danger("Ya existe una suscripción con el mismo nombre.");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    _flashMessage.Danger(dbUpdateException.InnerException.Message);
                 }
             }
             catch (Exception exception)
             {
-                ModelState.AddModelError(string.Empty, exception.Message);
+                _flashMessage.Danger( exception.Message);
             }
 
             return View(model);
@@ -228,7 +231,7 @@ namespace Elite_Training_Club.Controllers
                 }
                 catch (Exception exception)
                 {
-                    ModelState.AddModelError(string.Empty, exception.Message);
+                    _flashMessage.Danger(exception.Message);
                 }
             }
 
@@ -253,6 +256,7 @@ namespace Elite_Training_Club.Controllers
 
             _context.SubscriptionsPlans.Remove(subscriptionsPlan);
             await _context.SaveChangesAsync();
+            _flashMessage.Info("Registro borrado.");
             return RedirectToAction(nameof(Details), new { Id = subscriptionsPlan.Subscriptions.Id });
         }
 
@@ -285,6 +289,7 @@ namespace Elite_Training_Club.Controllers
 
             _context.Subscriptions.Remove(subscriptions);
             await _context.SaveChangesAsync();
+            _flashMessage.Info("Registro borrado.");
             return RedirectToAction(nameof(Index));
         }
 
