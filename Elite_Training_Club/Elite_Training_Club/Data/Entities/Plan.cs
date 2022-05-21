@@ -12,5 +12,8 @@ namespace Elite_Training_Club.Data.Entities
         public String Name { get; set; }
         public ICollection<SubscriptionsPlan> SubscriptionsPlans { get; set; }
 
+        [Display(Name = "# Suscipciones")]
+        public int SubscriptionNumber => SubscriptionsPlans == null ? 0 : SubscriptionsPlans.Count();
+
     }
 }
