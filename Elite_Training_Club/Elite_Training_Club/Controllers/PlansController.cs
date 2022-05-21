@@ -1,5 +1,6 @@
 ﻿using Elite_Training_Club.Data;
 using Elite_Training_Club.Data.Entities;
+using Elite_Training_Club.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,95 +21,11 @@ namespace Elite_Training_Club.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Plans.ToListAsync());
+            return View(await _context.Plans
+                .Include(c => c.SubscriptionsPlans)
+                .ToListAsync());
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Plan plan)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Add(plan);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException dbUpdateException)
-                {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
-                    {
-                        _flashMessage.Danger("Ya existe un plan con el mismo nombre.");
-                    }
-                    else
-                    {
-                        _flashMessage.Danger(dbUpdateException.InnerException.Message);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    _flashMessage.Danger(exception.Message);
-                }
-            }
-            return View(plan);
-        }
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Plan plan = await _context.Plans.FindAsync(id);
-            if (plan == null)
-            {
-                return NotFound();
-            }
-            return View(plan);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Plan plan)
-        {
-            if (id != plan.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(plan);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateException dbUpdateException)
-                {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
-                    {
-                        _flashMessage.Danger("Ya existe un Plan con el mismo nombre.");
-                    }
-                    else
-                    {
-                        _flashMessage.Danger(dbUpdateException.InnerException.Message);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    _flashMessage.Danger(exception.Message);
-                }
-            }
-            return View(plan);
-        }
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -124,32 +41,90 @@ namespace Elite_Training_Club.Controllers
 
             return View(plan);
         }
+
+        [NoDirectAccess]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            Plan plan = await _context.Plans.FirstOrDefaultAsync(c => c.Id == id);
+            try
             {
-                return NotFound();
+                _context.Plans.Remove(plan);
+                await _context.SaveChangesAsync();
+                _flashMessage.Info("Registro borrado.");
+            }
+            catch
+            {
+                _flashMessage.Danger("No se puede borrar el plan porque tiene registros relacionados.");
             }
 
-            Plan plan = await _context.Plans.FindAsync(id);
-            if (plan == null)
-            {
-                return NotFound();
-            }
-
-            return View(plan);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            Plan plan = await _context.Plans.FindAsync(id);
-            _context.Plans.Remove(plan);
-            await _context.SaveChangesAsync();
-            _flashMessage.Info("Registro borrado.");
             return RedirectToAction(nameof(Index));
         }
+
+        [NoDirectAccess]
+        public async Task<IActionResult> AddOrEdit(int id = 0)
+        {
+            if (id == 0)
+            {
+                return View(new Plan());
+            }
+            else
+            {
+                Plan plan = await _context.Plans.FindAsync(id);
+                if (plan == null)
+                {
+                    return NotFound();
+                }
+
+                return View(plan);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddOrEdit(int id, Plan plan)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == 0) //Insert
+                    {
+                        _context.Add(plan);
+                        await _context.SaveChangesAsync();
+                        _flashMessage.Info("Registro creado.");
+                    }
+                    else //Update
+                    {
+                        _context.Update(plan);
+                        await _context.SaveChangesAsync();
+                        _flashMessage.Info("Registro actualizado.");
+                    }
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        _flashMessage.Danger("Ya existe un plan con el mismo nombre.");
+                    }
+                    else
+                    {
+                        _flashMessage.Danger(dbUpdateException.InnerException.Message);
+                    }
+                    return View(plan);
+                }
+                catch (Exception exception)
+                {
+                    _flashMessage.Danger(exception.Message);
+                    return View(plan);
+                }
+
+                return Json(new { isValid = true, html = ModalHelper.RenderRazorViewToString(this, "_ViewAll", _context.Plans.Include(c => c.SubscriptionsPlans).ToList()) });
+
+            }
+
+            return Json(new { isValid = false, html = ModalHelper.RenderRazorViewToString(this, "AddOrEdit", plan) });
+        }
+
     }
 
 }
