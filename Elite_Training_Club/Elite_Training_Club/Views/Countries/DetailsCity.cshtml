@@ -1,77 +1,61 @@
-﻿@model Elite_Training_Club.Data.Entities.City
+﻿
+@model Elite_Training_Club.Data.Entities.City
 
 @{
     ViewData["Title"] = "Details";
 }
-<flash dismissable="true" />
 
+<flash dismissable="true" />
 
 <h1>Detalles</h1>
 
 <div>
-    <partial name="_CityDetails" />
+    <partial name="_CityDetails" />    
 </div>
+
 <div>
-    <a asp-action="AddHeadquarter" asp-route-id="@Model?.Id" class="btn btn-outline-primary">Agregar Sede</a>
-    <a asp-action="EditCity" asp-route-id="@Model?.Id" class="btn btn-outline-warning">Editar Ciudad</a>
-    <a asp-action="DetailsState"   asp-route-id="@Model?.State.Id" class="btn btn-outline-success">Regresar</a>
+    <a asp-action="DetailsState" asp-route-id="@Model?.State.Id" class="btn btn-outline-success"><i class="fa-solid fa-arrow-rotate-left"></i> Regresar</a>
 </div>
 <hr />
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Sedes</h3>
-            </div>
-            <div class="panel-body">
-                <table class="table table-hover table-responsive table-striped" id="MyTable">
-                    <thead>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Headquarters.FirstOrDefault().Name)
-                            </th>
-                                <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Headquarters)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Name)
-                                </td>
-                                <td>
-                                    <a asp-action="EditHeadquarter" asp-route-id="@item.Id" class="btn btn-outline-warning">Editar</a>
-                                    <a asp-action="DetailsHeadquarter" asp-route-id="@item.Id" class="btn btn-outline-info">Detalles</a>
-                                    <a asp-action="DeleteHeadquarter" asp-route-id="@item.Id" class="btn btn-outline-danger">Borrar</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+<!-- Content Wrapper. Contains page content -->
+<div class="container-fluid">
+    <div class="card mt-2">
+        <div class="card-header text-danger">
+            <i class="fa fa-globe"></i>  <strong>Ciudades</strong>
+        </div>
+        <div class="card-body">
+            <div id="view-all">
+                @await Html.PartialAsync("_ViewAllHeadquarter", Model)
             </div>
         </div>
     </div>
 </div>
 
+<partial name="_AddOrEditDialog" />
+<partial name="_DeleteDialog" />
+
+
 @section Scripts {
-    @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
+    <script src="~/js/showmodal.js"></script>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#MyTable').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
-            },
-            "aLengthMenu": [
-                [25, 50, 100, 200, -1],
-                [25, 50, 100, 200, "Todos"]
-            ]
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#StatesTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                },
+                "aLengthMenu": [
+                    [25, 50, 100, 200, -1],
+                    [25, 50, 100, 200, "Todos"]
+                ]
+            });
         });
-    });
-</script>
+    </script>
+
+    <script>
+        sc_deleteDialog.openModal('deleteItem', true, 'btnYesDelete', '/Countries/DeleteHeadquarter/', false);
+    </script>
 }
