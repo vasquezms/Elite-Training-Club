@@ -25,21 +25,6 @@ namespace Elite_Training_Club.Controllers
             .ToListAsync());
         }
        
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Category category = await _context.Categories
-                .FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-            return View(category);
-        }
 
         [NoDirectAccess]
         public async Task<IActionResult> Delete(int? id)

@@ -20,7 +20,8 @@ namespace Elite_Training_Club.Data.Entities
         [Display(Name = "Ciudades")]
 
         public int CitiesNumber => Cities == null ? 0 : Cities.Count;
-    }
+
+      }
    
 
 }
